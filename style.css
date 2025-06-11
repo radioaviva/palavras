@@ -1,254 +1,108 @@
-:root {
-    /* Variáveis de estilo para fácil ajuste */
-    --grid-cell-size-mobile: 20px;
-    --grid-cell-size-desktop: 40px; /* Mantido em 40px, pois é um bom tamanho para desktop */
-    --grid-gap-mobile: 1px; /* Será sobrescrito para 0px para o efeito de cápsula */
-    --grid-gap-desktop: 4px; /* Será sobrescrito para 0px para o efeito de cápsula */
-    --primary-bg-color: #f0f0f0;
-    --grid-bg-color: #ffffff;
-    --text-color-dark: #333;
-    --text-color-light: #555;
-    --selection-color: rgba(100, 150, 255, 0.3); /* Cor transparente para seleção temporária */
-    --found-word-color: #7B68EE; /* Cor sólida para palavras encontradas (ex: MediumSlateBlue) */
-}
-
 body {
-    font-family: 'Roboto', Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh; /* Garante que o body ocupa toda a altura da viewport */
-    background-color: var(--primary-bg-color);
-    margin: 0;
-    padding: 5px;
-    box-sizing: border-box;
-    overflow-y: auto; /* Permite rolagem apenas se o conteúdo exceder (para casos extremos) */
-    overflow-x: hidden; /* Garante que não haja rolagem horizontal */
+  font-family: 'Arial Black', Arial, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 0;
+  user-select: none;
 }
 
-header {
-    width: 100%;
-    text-align: center;
-    padding: 10px 0;
-    background-color: var(--grid-bg-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
+#game-container {
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 
 h1 {
-    color: var(--text-color-dark);
-    font-size: 1.5em;
-    margin: 0;
-    letter-spacing: 1.2px;
-    font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-#game-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 350px; /* Mantido para celular */
-    padding: 5px;
-    box-sizing: border-box;
-    flex-grow: 1; /* Permite que o wrapper cresça e ocupe o espaço disponível */
-    justify-content: flex-start; /* Alinha o conteúdo ao topo dentro do wrapper */
+#wordSearchCanvas {
+  border: 2px solid #333;
+  border-radius: 8px;
+  touch-action: none; /* evita scroll no touch */
+  background: #fafafa;
+  margin-bottom: 10px;
 }
 
-#word-search-grid {
-    display: grid;
-    gap: 0px; /* MUITO IMPORTANTE: REMOVE O ESPAÇAMENTO ENTRE AS CÉLULAS */
-    background-color: var(--grid-bg-color);
-    border-radius: 8px;
-    padding: 0px; /* MUITO IMPORTANTE: REMOVE O PADDING DO GRID */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-
-    /* Ajuste na fórmula do min-width já que o gap é 0. O width: 100% é o mais importante aqui. */
-    min-width: calc(10 * var(--grid-cell-size-mobile));
-    width: 100%; /* Ocupa 100% do max-width do game-wrapper (350px no mobile) */
-    aspect-ratio: 1 / 1; /* Mantém o grid quadrado */
-    box-sizing: border-box;
-    margin-bottom: 10px;
-
-    grid-template-columns: repeat(10, 1fr);
+#word-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 15px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 
-.grid-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8em;
-    font-weight: 500;
-    color: var(--text-color-light);
-    text-transform: uppercase;
-    box-sizing: border-box;
-
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-    text-overflow: clip;
-    white-space: nowrap;
-
-    border-radius: 0; /* Garante que as células não tenham bordas arredondadas por padrão */
-    padding: 0; /* Garante que as células não tenham padding por padrão */
+#word-list li {
+  background: #ddd;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #333;
+  user-select: none;
+  cursor: default;
+  min-width: 60px;
+  text-transform: uppercase;
 }
 
-/* ESTILOS PARA A SELEÇÃO TEMPORÁRIA */
-.selected {
-    background-color: var(--selection-color); /* Fundo transparente */
-    transition: background-color 0.1s ease; /* Transição suave */
-    /* NENHUM border-radius aqui, ele será tratado pelo JS para as extremidades da palavra encontrada */
+#timer-display {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #222;
+  font-weight: 700;
 }
 
-/* ESTILOS PARA AS PALAVRAS ENCONTRADAS PERMANENTEMENTE */
-.found-permanent {
-    background-color: var(--found-word-color); /* Cor sólida para a palavra encontrada */
-    color: var(--primary-bg-color); /* Cor da letra para contrastar com o fundo (geralmente branco ou muito claro) */
-    font-weight: 700;
-    transition: background-color 0.3s ease; /* Transição para quando a palavra é encontrada */
-    opacity: 0.9; /* Opacidade ligeiramente menor para a seleção permanente */
+button {
+  background-color: #276749;
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
 }
 
-/* NOVAS CLASSES: Para as extremidades da palavra encontrada */
-/* Estas classes serão aplicadas pelo JavaScript para formar a "cápsula" */
-
-/* Horizontal (Esquerda para Direita) */
-.found-start.horizontal-start {
-    border-top-left-radius: 999px;
-    border-bottom-left-radius: 999px;
-}
-.found-end.horizontal-end {
-    border-top-right-radius: 999px;
-    border-bottom-right-radius: 999px;
+button:hover {
+  background-color: #2f855a;
 }
 
-/* Vertical (Cima para Baixo) */
-.found-start.vertical-start {
-    border-top-left-radius: 999px;
-    border-top-right-radius: 999px;
-}
-.found-end.vertical-end {
-    border-bottom-left-radius: 999px;
-    border-bottom-right-radius: 999px;
+#victory-message {
+  font-size: 1.2rem;
+  color: #2f855a;
+  font-weight: 700;
+  margin-top: 10px;
 }
 
-/* Diagonal (Superior-Esquerda para Inferior-Direita) */
-.found-start.diagonal-se-start { /* southeast */
-    border-top-left-radius: 999px;
-}
-.found-end.diagonal-se-end {
-    border-bottom-right-radius: 999px;
-}
-
-/* Diagonal (Superior-Direita para Inferior-Esquerda) */
-.found-start.diagonal-sw-start { /* southwest */
-    border-top-right-radius: 999px;
-}
-.found-end.diagonal-sw-end {
-    border-bottom-left-radius: 999px;
+/* Confetti */
+.confetti {
+  position: fixed;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  opacity: 0.9;
+  border-radius: 50%;
+  pointer-events: none;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
 }
 
-
-#word-list-container {
-    background-color: var(--primary-bg-color);
-    padding: 10px 0;
-    border-radius: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    flex-grow: 1; /* Permite que a lista de palavras também cresça e ocupe espaço */
-    display: flex; /* Adicionado para facilitar o controle do wrap das palavras */
-    justify-content: center; /* Centraliza as palavras */
-    align-items: flex-start; /* Alinha as palavras ao topo do container */
-}
-
-#words-to-find {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px 10px;
-}
-
-#words-to-find li {
-    font-size: 0.75em;
-    padding: 2px 5px;
-    color: var(--text-color-light);
-    text-transform: uppercase;
-}
-
-#words-to-find li.found {
-    text-decoration: line-through;
-    color: var(--found-word-color);
-}
-
-/* Media Queries para telas maiores (desktops/tablets) */
-@media (min-width: 768px) {
-    header {
-        padding: 15px 0;
-        margin-bottom: 15px;
-    }
-
-    h1 {
-        font-size: 2em;
-    }
-
-    #game-wrapper {
-        flex-direction: row;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 30px;
-        max-width: 960px;
-        padding: 20px;
-    }
-
-    #word-search-grid {
-        gap: 0px; /* MUITO IMPORTANTE: TAMBÉM ZERAR O GAP PARA DESKTOP */
-        padding: 0px; /* MUITO IMPORTANTE: TAMBÉM ZERAR O PADDING PARA DESKTOP */
-        min-width: calc(10 * var(--grid-cell-size-desktop)); /* Ajusta o min-width já que não tem gap */
-        width: auto;
-        height: auto;
-        max-width: 50vw;
-        max-height: 80vh;
-        margin-bottom: 0;
-    }
-
-    .grid-cell {
-        font-size: 1.3em;
-    }
-
-    #word-list-container {
-        padding: 0;
-        width: auto;
-        max-width: 300px;
-        flex-grow: 0;
-        flex-shrink: 0;
-    }
-
-    #words-to-find {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-
-    #words-to-find li {
-        font-size: 1em;
-        padding: 2px 0;
-    }
-}
-
-/* Opcional: Adicionar uma media query para telas muito grandes (ultra-wide) */
-@media (min-width: 1200px) {
-    #game-wrapper {
-        max-width: 1100px;
-        gap: 50px;
-    }
-    #word-search-grid {
-        max-width: none;
-    }
-    #words-to-find li {
-        font-size: 1.1em;
-    }
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
 }
