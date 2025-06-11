@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caça-Palavras</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Caça-Palavras Bíblico</title>
+  <link rel="stylesheet" href="wordsearch.css" />
 </head>
 <body>
-    <header>
-        <h1>Caça-Palavras Bíblico</h1>
-    </header>
-    <div id="game-wrapper">
-        <div id="word-search-grid"></div>
-        <div id="word-list-container">
-            <ul id="words-to-find"></ul>
+  <div class="body-wordsearch">
+    <div class="container-wordsearch">
+      <h1>Jogo Bíblico: Caça-Palavras</h1>
+      <div id="timer-display">Tempo: 00:00</div>
+      <div class="game-area-wordsearch">
+        <canvas id="wordSearchCanvas" width="500" height="500"></canvas>
+        <div class="word-list-container-wordsearch">
+          <h2>Palavras para Encontrar:</h2>
+          <ul id="word-list"></ul>
         </div>
+      </div>
+      <button id="restart-button" class="action-button">Reiniciar Jogo</button>
+      <div id="victory-message" class="victory-message" style="display:none;">
+        <p>Parabéns! Você encontrou todas as palavras!</p>
+        <button id="victory-restart-button" class="action-button">Jogar Novamente</button>
+      </div>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="wordsearch.js"></script>
 </body>
 </html>
