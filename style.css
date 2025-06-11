@@ -1,108 +1,193 @@
-body {
-  font-family: 'Arial Black', Arial, sans-serif;
-  background: #f5f5f5;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  margin: 0;
-  user-select: none;
+:root {
+    /* Variáveis de estilo para fácil ajuste */
+    --grid-cell-size-mobile: 20px;
+    --grid-cell-size-desktop: 40px; /* Mantido em 40px, pois é um bom tamanho para desktop */
+    --grid-gap-mobile: 1px; /* Será sobrescrito para 0px para o efeito de cápsula */
+    --grid-gap-desktop: 4px; /* Será sobrescrito para 0px para o efeito de cápsula */
+    --primary-bg-color: #f0f0f0;
+    --grid-bg-color: #ffffff;
+    --text-color-dark: #333;
+    --text-color-light: #555;
+    --selection-color: rgba(100, 150, 255, 0.3); /* Cor transparente para seleção temporária */
+    --found-word-color: #7B68EE; /* Cor sólida para palavras encontradas (ex: MediumSlateBlue) */
 }
 
-#game-container {
-  max-width: 520px;
-  width: 100%;
-  text-align: center;
-  background: white;
-  border-radius: 8px;
-  padding: 15px 20px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+/* Ajustes para o contêiner do jogo */
+.game-section-wrapper { /* Use a classe que você já tem no HTML */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza o conteúdo horizontalmente */
+    padding: 1rem; /* Adiciona um padding para não colar nas bordas da seção */
+    background: var(--cor-primaria); /* Usa a cor de fundo da sua section principal */
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-base);
+    margin-bottom: 2rem; /* Mantém o espaçamento com a próxima seção */
+    text-align: center; /* Centraliza o título do jogo */
 }
 
-h1 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
+.game-section-wrapper h1 { /* Para estilizar o H1 do jogo especificamente */
+    color: var(--cor-secundaria); /* Usa a cor de destaque do seu tema principal */
+    font-size: 1.8rem; /* Tamanho para o título do jogo */
+    margin-bottom: 1rem;
 }
 
-#wordSearchCanvas {
-  border: 2px solid #333;
-  border-radius: 8px;
-  touch-action: none; /* evita scroll no touch */
-  background: #fafafa;
-  margin-bottom: 10px;
+
+/* Antigo #game-wrapper, agora .container-wordsearch dentro da .section */
+.container-wordsearch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Ocupa 100% da largura da .game-section-wrapper */
+    max-width: 500px; /* Limita a largura máxima do jogo em telas maiores */
+    padding: 0; /* Removido padding, já que o wrapper já tem */
+    box-sizing: border-box;
+    flex-grow: 0; /* Não precisa crescer, o tamanho é definido pelo max-width */
+    justify-content: flex-start;
 }
 
-#word-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0 0 15px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
+
+/* Ajustes para o grid do caça-palavras */
+#wordSearchCanvas { /* Use o ID do seu canvas no HTML */
+    /* Remove o min-width e o width para que ele se adapte ao pai */
+    /* min-width: calc(10 * var(--grid-cell-size-mobile)); */
+    /* width: 100%; */
+    /* height: auto; */ /* Para manter a proporção */
+    max-width: 100%; /* Garante que o canvas não exceda o pai */
+    height: auto; /* Mantém a proporção */
+    border: 1px solid #ccc; /* Adiciona uma borda para visualização */
+    box-sizing: border-box;
+    display: block; /* Remove espaço extra abaixo do canvas */
+    margin: 0 auto; /* Centraliza o canvas */
+}
+
+.game-area-wordsearch {
+    display: flex;
+    flex-direction: column; /* Em mobile, canvas em cima, lista embaixo */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px; /* Espaço entre o jogo e o botão */
+}
+
+.word-list-container-wordsearch {
+    width: 100%; /* Ocupa a largura total */
+    text-align: center; /* Centraliza o título e a lista */
+    margin-top: 15px; /* Espaço entre o canvas e a lista de palavras */
+}
+
+.word-list-container-wordsearch h2 {
+    font-size: 1.2em;
+    color: var(--cor-secundaria); /* Usa a cor de destaque do seu tema principal */
+    margin-bottom: 0.8rem;
+}
+
+#word-list { /* Renomeei para ser mais específico e não conflitar com ul genérico */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 15px; /* Espaçamento entre as palavras */
 }
 
 #word-list li {
-  background: #ddd;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-weight: bold;
-  color: #333;
-  user-select: none;
-  cursor: default;
-  min-width: 60px;
-  text-transform: uppercase;
+    font-size: 0.9em; /* Ajuste para melhor legibilidade */
+    padding: 4px 8px; /* Mais padding para os itens da lista */
+    color: var(--text-color-light);
+    text-transform: uppercase;
+    background-color: var(--cor-fundo); /* Adiciona um leve fundo para destaque */
+    border-radius: 5px;
 }
 
-#timer-display {
-  font-size: 1.1rem;
-  margin-bottom: 15px;
-  color: #222;
-  font-weight: 700;
+#word-list li.found {
+    text-decoration: line-through;
+    color: var(--found-word-color);
+    font-weight: bold; /* Destacar palavras encontradas */
 }
 
-button {
-  background-color: #276749;
-  border: none;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-bottom: 10px;
+/* Estilos para os botões */
+.action-button {
+    background-color: var(--cor-secundaria); /* Cor do tema principal */
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    margin-top: 10px; /* Espaçamento com o jogo */
 }
 
-button:hover {
-  background-color: #2f855a;
+.action-button:hover {
+    background-color: var(--cor-destaque); /* Cor de destaque do tema principal */
 }
 
-#victory-message {
-  font-size: 1.2rem;
-  color: #2f855a;
-  font-weight: 700;
-  margin-top: 10px;
+/* Mensagem de vitória */
+.victory-message {
+    background-color: var(--cor-destaque); /* Cor de destaque do tema principal */
+    color: var(--cor-primaria);
+    padding: 1rem;
+    border-radius: var(--radius-base);
+    margin-top: 1rem;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
 }
 
-/* Confetti */
-.confetti {
-  position: fixed;
-  top: 0;
-  width: 7px;
-  height: 7px;
-  opacity: 0.9;
-  border-radius: 50%;
-  pointer-events: none;
-  animation-name: confetti-fall;
-  animation-timing-function: linear;
-  animation-iteration-count: 1;
+.victory-message button {
+    margin-top: 0.8rem;
 }
 
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-  }
+/* Media Queries para telas maiores (desktops/tablets) */
+@media (min-width: 768px) {
+    .game-section-wrapper {
+        flex-direction: row; /* Coloca o canvas e a lista lado a lado */
+        justify-content: center; /* Centraliza horizontalmente */
+        align-items: flex-start; /* Alinha ao topo verticalmente */
+        gap: 30px; /* Espaço entre o canvas e a lista */
+        max-width: 960px; /* Limita a largura total do wrapper */
+        padding: 2rem; /* Mais padding em desktop */
+    }
+
+    .container-wordsearch { /* Agora este é o contêiner do canvas */
+        max-width: 500px; /* Limita o tamanho do canvas para desktop */
+        min-width: 350px; /* Tamanho mínimo para o canvas */
+        flex: 1; /* Permite que o canvas cresça/encolha um pouco */
+    }
+
+    #wordSearchCanvas {
+        width: 100%; /* Garante que o canvas ocupe a largura do seu container */
+        height: auto; /* Mantém a proporção */
+    }
+
+    .game-area-wordsearch {
+        flex-direction: row; /* Volta a ser row para o canvas e lista */
+        align-items: flex-start;
+        gap: 20px; /* Espaço entre o canvas e a lista */
+        margin-bottom: 0;
+    }
+
+    .word-list-container-wordsearch {
+        width: auto; /* Largura automática para a lista */
+        text-align: left; /* Alinha o texto da lista à esquerda */
+        margin-top: 0;
+        flex: 1; /* Permite que a lista de palavras ocupe o espaço restante */
+    }
+
+    .word-list-container-wordsearch h2 {
+        font-size: 1.4em;
+        margin-top: 0;
+    }
+
+    #word-list {
+        flex-direction: column; /* Palavras em coluna para desktop */
+        align-items: flex-start; /* Alinha à esquerda */
+        gap: 5px; /* Espaçamento menor para coluna */
+    }
+
+    #word-list li {
+        font-size: 1em;
+        padding: 2px 0; /* Remove padding lateral quando em coluna */
+        background-color: transparent; /* Remove fundo para ficar mais limpo */
+    }
 }
