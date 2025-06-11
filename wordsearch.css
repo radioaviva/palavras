@@ -1,190 +1,490 @@
-:root {
-    /* Variáveis de estilo para fácil ajuste */
-    --grid-cell-size-mobile: 20px;
-    --grid-cell-size-desktop: 40px; /* Mantido em 40px, pois é um bom tamanho para desktop */
-    --grid-gap-mobile: 1px; /* Será sobrescrito para 0px para o efeito de cápsula */
-    --grid-gap-desktop: 4px; /* Será sobrescrito para 0px para o efeito de cápsula */
-    --primary-bg-color: #f0f0f0;
-    --grid-bg-color: #ffffff;
-    --text-color-dark: #333;
-    --text-color-light: #555;
-    --selection-color: rgba(100, 150, 255, 0.3); /* Cor transparente para seleção temporária */
-    --found-word-color: #7B68EE; /* Cor sólida para palavras encontradas (ex: MediumSlateBlue) */
-}
-
-/* Ajustes para o contêiner do jogo */
-.game-section-wrapper { /* Use a classe que você já tem no HTML */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centraliza o conteúdo horizontalmente */
-    padding: 1rem; /* Adiciona um padding para não colar nas bordas da seção */
-    background: var(--cor-primaria); /* Usa a cor de fundo da sua section principal */
-    border-radius: var(--radius-base);
-    box-shadow: var(--shadow-base);
-    margin-bottom: 2rem; /* Mantém o espaçamento com a próxima seção */
-    text-align: center; /* Centraliza o título do jogo */
-    margin-top: -2.8rem;
-}
-
-.game-section-wrapper h1 { /* Para estilizar o H1 do jogo especificamente */
-    color: var(--cor-secundaria); /* Usa a cor de destaque do seu tema principal */
-    font-size: 1rem; /* Tamanho para o título do jogo */
-    margin-bottom: 0rem;
-}
-
-
-/* Antigo #game-wrapper, agora .container-wordsearch dentro da .section */
-.container-wordsearch {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%; /* Ocupa 100% da largura da .game-section-wrapper */
-    max-width: 500px; /* Limita a largura máxima do jogo em telas maiores */
-    padding: 0; /* Removido padding, já que o wrapper já tem */
-    box-sizing: border-box;
-    flex-grow: 0; /* Não precisa crescer, o tamanho é definido pelo max-width */
-    justify-content: flex-start;
-}
-
-
-/* Ajustes para o grid do caça-palavras */
-#wordSearchCanvas {
-    max-width: 100%; /* Garante que o canvas não exceda o pai */
-    height: auto; /* Mantém a proporção */
-    border: 1px solid #ccc; /* Adiciona uma borda para visualização */
-    box-sizing: border-box;
-    display: block; /* Remove espaço extra abaixo do canvas */
-    margin: 0 auto; /* Centraliza o canvas */
-}
-
-.game-area-wordsearch {
-    display: flex;
-    flex-direction: column; /* Em mobile, canvas em cima, lista embaixo */
-    align-items: center;
-    width: 100%;
-    margin-bottom: 15px; /* Espaço entre o jogo e o botão */
-}
-
-.word-list-container-wordsearch {
-    width: 100%; /* Ocupa a largura total */
-    text-align: center; /* Centraliza o título e a lista */
-    margin-top: 15px; /* Espaço entre o canvas e a lista de palavras */
-}
-
-.word-list-container-wordsearch h2 {
-    font-size: 1.2em;
-    color: var(--cor-secundaria); /* Usa a cor de destaque do seu tema principal */
-    margin-bottom: 0.8rem;
-}
-
-#word-list { /* Renomeei para ser mais específico e não conflitar com ul genérico */
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px 15px; /* Espaçamento entre as palavras */
-}
-
-#word-list li {
-    font-size: 0.9em; /* Ajuste para melhor legibilidade */
-    padding: 4px 8px; /* Mais padding para os itens da lista */
-    color: var(--text-color-light);
-    text-transform: uppercase;
-    background-color: var(--cor-fundo); /* Adiciona um leve fundo para destaque */
-    border-radius: 5px;
-}
-
-#word-list li.found {
-    text-decoration: line-through;
-    color: var(--found-word-color);
-    font-weight: bold; /* Destacar palavras encontradas */
-}
-
-/* Estilos para os botões */
-.action-button {
-    background-color: var(--cor-secundaria); /* Cor do tema principal */
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: var(--radius-base);
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s ease;
-    margin-top: 10px; /* Espaçamento com o jogo */
-}
-
-.action-button:hover {
-    background-color: var(--cor-destaque); /* Cor de destaque do tema principal */
-}
-
-/* Mensagem de vitória */
-.victory-message {
-    background-color: var(--cor-destaque); /* Cor de destaque do tema principal */
-    color: var(--cor-primaria);
-    padding: 1rem;
-    border-radius: var(--radius-base);
-    margin-top: 1rem;
-    font-size: 1.1em;
-    font-weight: bold;
-    text-align: center;
-}
-
-.victory-message button {
-    margin-top: 0.8rem;
-}
-
-/* Media Queries para telas maiores (desktops/tablets) */
-@media (min-width: 768px) {
-    .game-section-wrapper {
-        flex-direction: row; /* Coloca o canvas e a lista lado a lado */
-        justify-content: center; /* Centraliza horizontalmente */
-        align-items: flex-start; /* Alinha ao topo verticalmente */
-        gap: 30px; /* Espaço entre o canvas e a lista */
-        max-width: 960px; /* Limita a largura total do wrapper */
-        padding: 2rem; /* Mais padding em desktop */
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('wordSearchCanvas');
+    if (!canvas) {
+        console.warn("Canvas 'wordSearchCanvas' não encontrado. O script do caça-palavras pode não estar na página correta ou o elemento foi removido.");
+        return;
     }
 
-    .container-wordsearch { /* Agora este é o contêiner do canvas */
-        max-width: 500px; /* Limita o tamanho do canvas para desktop */
-        min-width: 350px; /* Tamanho mínimo para o canvas */
-        flex: 1; /* Permite que o canvas cresça/encolha um pouco */
+    const ctx = canvas.getContext('2d');
+    const wordListElement = document.getElementById('word-list');
+    const restartButton = document.getElementById('restart-button');
+    const victoryRestartButton = document.getElementById('victory-restart-button');
+    const victoryMessage = document.getElementById('victory-message');
+    const timerDisplay = document.getElementById('timer-display');
+
+    // Áudios
+    const soundCorrect = new Audio('sons/acerto.mp3');
+    const soundVictory = new Audio('sons/vitoria.mp3');
+    soundCorrect.volume = 0.5;
+    soundVictory.volume = 0.7;
+
+    const ALL_WORD_SETS = [
+        [ "MOISÉS", "DAVI", "ESTER", "NOÉ", "MARTA", "PEDRO", "PAULO", "JOÃO", "ABRAÃO", "SARA", "JESUS", "DEUS" ],
+        [ "ISAIAS", "JEREMIAS", "EZEQUIEL", "DANIEL", "OSEIAS", "JOEL", "AMÓS", "OBADIAS", "JONAS", "MIQUEIAS" ],
+        [ "MARIA", "JOSÉ", "ANA", "ELIAS", "SAMUEL", "JUDAS", "CALEBE", "GIDEÃO", "DEBORA", "RUTE" ],
+        [ "REBECA", "JACÓ", "RAQUEL", "ISAQUE", "LABÃO", "ESAÚ", "LEIA", "SIMÃO", "BENJAMIM", "NOEMI" ],
+        [ "GABRIEL", "MIGUEL", "RAFAEL", "ZACARIAS", "ISABEL", "JOANA", "TOMÉ", "MATEUS", "FILIPE", "ANDRÉ" ]
+        [ "JAIRO", "SILAS", "SALOMÃO", "ELIZEU", "CANAÃ", "EVA", "ADÃO", "JOQUEBEDE", "EFRAIM", "GENESIS" ]
+    ];
+
+    const GRID_SIZE = 12;
+    const CELL_SIZE = canvas.width / GRID_SIZE;
+    const FONT_SIZE = CELL_SIZE * 0.6;
+    const FONT_FAMILY = 'Arial Black, Arial';
+
+    let grid = [];
+    let currentWords = [];
+    let foundWords = new Set();
+
+    let isSelecting = false;
+    let startCellCoords = { row: -1, col: -1 };
+    let endCellCoords = { row: -1, col: -1 };
+    let currentSelectionPath = [];
+
+    let timerInterval;
+    let secondsElapsed = 0;
+
+    const directions = [
+        { dr: 0, dc: 1 },   // Direita
+        { dr: 1, dc: 0 },   // Baixo
+        { dr: 1, dc: 1 },   // Baixo-direita
+        { dr: 1, dc: -1 },  // Baixo-esquerda
+        { dr: -1, dc: 1 },  // Cima-direita
+        { dr: -1, dc: -1 }  // Cima-esquerda
+    ];
+
+    function initializeGame() {
+        grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(''));
+        foundWords.clear();
+        currentSelectionPath = [];
+        isSelecting = false;
+        startCellCoords = { row: -1, col: -1 };
+        endCellCoords = { row: -1, col: -1 };
+
+        clearInterval(timerInterval);
+        secondsElapsed = 0;
+        updateTimerDisplay();
+        startTimer();
+
+        victoryMessage.style.display = 'none';
+        restartButton.style.display = 'block';
+        victoryRestartButton.style.display = 'none';
+
+        wordListElement.innerHTML = '';
+        document.querySelectorAll('.confetti').forEach(c => c.remove());
+
+        placeWords();
+        fillEmptyCells();
+        displayWordList();
+        drawGrid();
     }
 
-    #wordSearchCanvas {
-        width: 100%; /* Garante que o canvas ocupe a largura do seu container */
-        height: auto; /* Mantém a proporção */
+    function placeWords() {
+        const randomIndex = Math.floor(Math.random() * ALL_WORD_SETS.length);
+        currentWords = ALL_WORD_SETS[randomIndex].map(word => word.toUpperCase());
+
+        const wordsToPlace = [...currentWords].sort(() => 0.5 - Math.random());
+
+        wordsToPlace.forEach(word => {
+            let placed = false;
+            let attempts = 0;
+            while (!placed && attempts < 1000) {
+                const placementDirections = directions;
+                const dir = placementDirections[Math.floor(Math.random() * placementDirections.length)];
+                const startRow = Math.floor(Math.random() * GRID_SIZE);
+                const startCol = Math.floor(Math.random() * GRID_SIZE);
+
+                if (canPlaceWord(word, startRow, startCol, dir.dr, dir.dc)) {
+                    for (let i = 0; i < word.length; i++) {
+                        const r = startRow + i * dir.dr;
+                        const c = startCol + i * dir.dc;
+                        grid[r][c] = word[i];
+                    }
+                    placed = true;
+                }
+                attempts++;
+            }
+            if (!placed) {
+                console.warn(`Não foi possível posicionar a palavra: "${word}". Ela será ignorada neste jogo.`);
+                currentWords = currentWords.filter(w => w !== word);
+            }
+        });
     }
 
-    .game-area-wordsearch {
-        flex-direction: row; /* Volta a ser row para o canvas e lista */
-        align-items: flex-start;
-        gap: 20px; /* Espaço entre o canvas e a lista */
-        margin-bottom: 0;
+    function canPlaceWord(word, r, c, dr, dc) {
+        if (r + (word.length - 1) * dr < 0 || r + (word.length - 1) * dr >= GRID_SIZE ||
+            c + (word.length - 1) * dc < 0 || c + (word.length - 1) * dc >= GRID_SIZE) {
+            return false;
+        }
+        for (let i = 0; i < word.length; i++) {
+            const currentRow = r + i * dr;
+            const currentCol = c + i * dc;
+            if (grid[currentRow][currentCol] !== '' && grid[currentRow][currentCol] !== word[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    .word-list-container-wordsearch {
-        width: auto; /* Largura automática para a lista */
-        text-align: left; /* Alinha o texto da lista à esquerda */
-        margin-top: 0;
-        flex: 1; /* Permite que a lista de palavras ocupe o espaço restante */
+    function fillEmptyCells() {
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                if (grid[r][c] === '') {
+                    grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+                }
+            }
+        }
     }
 
-    .word-list-container-wordsearch h2 {
-        font-size: 1.2rem;
-        margin-top: 0;
+    function displayWordList() {
+        currentWords.forEach(word => {
+            const listItem = document.createElement('li');
+            listItem.textContent = word;
+            listItem.dataset.word = word;
+            wordListElement.appendChild(listItem);
+        });
     }
 
-    #word-list {
-        flex-direction: column; /* Palavras em coluna para desktop */
-        align-items: flex-start; /* Alinha à esquerda */
-        gap: 2px; /* Espaçamento menor para coluna */
+    function getCellCoordsFromMouse(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        let clientX, clientY;
+
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
+
+        const col = Math.floor(x / CELL_SIZE);
+        const row = Math.floor(y / CELL_SIZE);
+
+        return { row, col };
     }
 
-    #word-list li {
-        font-size: 0.8em;
-        padding: 2px 0; /* Remove padding lateral quando em coluna */
-        background-color: transparent; /* Remove fundo para ficar mais limpo */
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                const x = c * CELL_SIZE + CELL_SIZE / 2;
+                const y = r * CELL_SIZE + CELL_SIZE / 2;
+
+                ctx.fillStyle = '#555';
+                ctx.fillText(grid[r][c], x, y);
+            }
+        }
+        drawFoundWords();
+        drawCurrentSelection();
     }
-}
+
+    function drawFoundWords() {
+        ctx.lineWidth = CELL_SIZE * 0.7;
+        ctx.lineCap = 'round';
+
+        foundWords.forEach(word => {
+            let wordPath = [];
+            outerLoop:
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    for (const dir of directions) {
+                        let tempWord = '';
+                        let tempPath = [];
+                        for (let i = 0; i < word.length; i++) {
+                            const currR = r + i * dir.dr;
+                            const currC = c + i * dir.dc;
+                            if (currR >= 0 && currR < GRID_SIZE && currC >= 0 && currC < GRID_SIZE) {
+                                tempWord += grid[currR][currC];
+                                tempPath.push({ row: currR, col: currC });
+                            } else {
+                                break;
+                            }
+                        }
+                        if (tempWord === word) {
+                            wordPath = tempPath;
+                            break outerLoop;
+                        }
+                    }
+                }
+            }
+
+            if (wordPath.length > 0) {
+                const firstCell = wordPath[0];
+                const lastCell = wordPath[wordPath.length - 1];
+
+                const startX = firstCell.col * CELL_SIZE + CELL_SIZE / 2;
+                const startY = firstCell.row * CELL_SIZE + CELL_SIZE / 2;
+                const endX = lastCell.col * CELL_SIZE + CELL_SIZE / 2;
+                const endY = lastCell.row * CELL_SIZE + CELL_SIZE / 2;
+
+                ctx.strokeStyle = '#b3ffb3';
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+
+                ctx.fillStyle = '#333';
+                ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
+                wordPath.forEach(cell => {
+                    const x = cell.col * CELL_SIZE + CELL_SIZE / 2;
+                    const y = cell.row * CELL_SIZE + CELL_SIZE / 2;
+                    ctx.fillText(grid[cell.row][cell.col], x, y);
+                });
+            }
+        });
+    }
+
+    function drawCurrentSelection() {
+        if (currentSelectionPath.length > 0) {
+            ctx.lineWidth = CELL_SIZE * 0.7;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#cfe8fc';
+
+            const firstCell = currentSelectionPath[0];
+            const lastCell = currentSelectionPath[currentSelectionPath.length - 1];
+
+            const startX = firstCell.col * CELL_SIZE + CELL_SIZE / 2;
+            const startY = firstCell.row * CELL_SIZE + CELL_SIZE / 2;
+            const endX = lastCell.col * CELL_SIZE + CELL_SIZE / 2;
+            const endY = lastCell.row * CELL_SIZE + CELL_SIZE / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#000';
+            ctx.font = `${FONT_SIZE}px ${FONT_FAMILY}`;
+            currentSelectionPath.forEach(cell => {
+                const x = cell.col * CELL_SIZE + CELL_SIZE / 2;
+                const y = cell.row * CELL_SIZE + CELL_SIZE / 2;
+                ctx.fillText(grid[cell.row][cell.col], x, y);
+            });
+        }
+    }
+
+    function calculateSelectionPath(start, end) {
+        const path = [];
+        const dr = end.row - start.row;
+        const dc = end.col - start.col;
+
+        if (dr === 0 && dc === 0) {
+            path.push(start);
+            return path;
+        }
+
+        const absDr = Math.abs(dr);
+        const absDc = Math.abs(dc);
+
+        if (absDr !== 0 && absDc !== 0 && absDr !== absDc) {
+            return path;
+        }
+
+        const stepR = dr === 0 ? 0 : dr / absDr;
+        const stepC = dc === 0 ? 0 : dc / absDc;
+        const steps = Math.max(absDr, absDc);
+
+        for (let i = 0; i <= steps; i++) {
+            const r = start.row + stepR * i;
+            const c = start.col + stepC * i;
+            if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) break;
+            path.push({ row: r, col: c });
+        }
+        return path;
+    }
+
+    function checkWord() {
+        if (currentSelectionPath.length === 0) return;
+
+        const selectedWord = currentSelectionPath.map(cell => grid[cell.row][cell.col]).join('');
+        const reversedWord = selectedWord.split('').reverse().join('');
+
+        if (currentWords.includes(selectedWord) && !foundWords.has(selectedWord)) {
+            foundWords.add(selectedWord);
+            soundCorrect.play();
+            markWordAsFound(selectedWord);
+        } else if (currentWords.includes(reversedWord) && !foundWords.has(reversedWord)) {
+            foundWords.add(reversedWord);
+            soundCorrect.play();
+            markWordAsFound(reversedWord);
+        }
+        drawGrid();
+        clearSelection();
+
+        if (foundWords.size === currentWords.length) {
+            winGame();
+        }
+    }
+
+    function markWordAsFound(word) {
+        const items = wordListElement.querySelectorAll('li');
+        items.forEach(item => {
+            if (item.dataset.word === word) {
+                item.style.textDecoration = 'line-through';
+                item.style.color = '#090';
+            }
+        });
+    }
+
+    function clearSelection() {
+        isSelecting = false;
+        currentSelectionPath = [];
+        startCellCoords = { row: -1, col: -1 };
+        endCellCoords = { row: -1, col: -1 };
+        drawGrid();
+    }
+
+    function winGame() {
+        soundVictory.play();
+        clearInterval(timerInterval);
+        victoryMessage.style.display = 'block';
+        restartButton.style.display = 'none';
+        victoryRestartButton.style.display = 'block';
+        showConfetti();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+        const seconds = (secondsElapsed % 60).toString().padStart(2, '0');
+        timerDisplay.textContent = `Tempo: ${minutes}:${seconds}`;
+    }
+
+    function showConfetti() {
+        const colors = ['#fce18a', '#ff726d', '#b48def', '#f4306d', '#76f77b'];
+        const confettiCount = 150;
+
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = `${Math.random() * 100}vw`;
+            confetti.style.animationDuration = `${(Math.random() * 3 + 2)}s`;
+            confetti.style.width = confetti.style.height = `${Math.random() * 7 + 5}px`;
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 5000);
+        }
+    }
+
+    // Controle de toque com suporte a apenas um toque ativo
+
+    let activeTouchId = null;
+
+    canvas.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const coords = getCellCoordsFromMouse(e);
+        if (coords.row < 0 || coords.row >= GRID_SIZE || coords.col < 0 || coords.col >= GRID_SIZE) return;
+
+        startCellCoords = coords;
+        endCellCoords = coords;
+        isSelecting = true;
+        currentSelectionPath = calculateSelectionPath(startCellCoords, endCellCoords);
+        drawGrid();
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isSelecting) return;
+        e.preventDefault();
+        const coords = getCellCoordsFromMouse(e);
+        if (coords.row < 0 || coords.row >= GRID_SIZE || coords.col < 0 || coords.col >= GRID_SIZE) return;
+
+        if (coords.row !== endCellCoords.row || coords.col !== endCellCoords.col) {
+            endCellCoords = coords;
+            currentSelectionPath = calculateSelectionPath(startCellCoords, endCellCoords);
+            drawGrid();
+        }
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+        if (!isSelecting) return;
+        e.preventDefault();
+        checkWord();
+        clearSelection();
+    });
+
+    canvas.addEventListener('mouseleave', (e) => {
+        if (!isSelecting) return;
+        e.preventDefault();
+        clearSelection();
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+        if (activeTouchId !== null) return;
+        e.preventDefault();
+        activeTouchId = e.touches[0].identifier;
+        const touch = e.touches[0];
+        const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY };
+        const coords = getCellCoordsFromMouse(fakeEvent);
+        if (coords.row < 0 || coords.row >= GRID_SIZE || coords.col < 0 || coords.col >= GRID_SIZE) return;
+
+        startCellCoords = coords;
+        endCellCoords = coords;
+        isSelecting = true;
+        currentSelectionPath = calculateSelectionPath(startCellCoords, endCellCoords);
+        drawGrid();
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+        if (!isSelecting) return;
+        e.preventDefault();
+        const touch = Array.from(e.touches).find(t => t.identifier === activeTouchId);
+        if (!touch) return;
+
+        const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY };
+        const coords = getCellCoordsFromMouse(fakeEvent);
+        if (coords.row < 0 || coords.row >= GRID_SIZE || coords.col < 0 || coords.col >= GRID_SIZE) return;
+
+        if (coords.row !== endCellCoords.row || coords.col !== endCellCoords.col) {
+            endCellCoords = coords;
+            currentSelectionPath = calculateSelectionPath(startCellCoords, endCellCoords);
+            drawGrid();
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const touchEnded = Array.from(e.changedTouches).find(t => t.identifier === activeTouchId);
+        if (touchEnded && isSelecting) {
+            checkWord();
+            clearSelection();
+            activeTouchId = null;
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchcancel', (e) => {
+        const touchCanceled = Array.from(e.changedTouches).find(t => t.identifier === activeTouchId);
+        if (touchCanceled) {
+            clearSelection();
+            activeTouchId = null;
+        }
+    });
+
+    restartButton.addEventListener('click', () => {
+        initializeGame();
+    });
+
+    victoryRestartButton.addEventListener('click', () => {
+        initializeGame();
+    });
+
+    initializeGame();
+});
