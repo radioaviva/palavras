@@ -23,7 +23,7 @@
     box-shadow: var(--shadow-base);
     margin-bottom: 2rem; /* Mantém o espaçamento com a próxima seção */
     text-align: center; /* Centraliza o título do jogo */
-    margin-top: -2.8rem;
+    margin-top: 0rem;
 }
 
 .game-section-wrapper h1 { /* Para estilizar o H1 do jogo especificamente */
