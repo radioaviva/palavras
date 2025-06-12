@@ -29,7 +29,7 @@
 .game-section-wrapper h1 { /* Para estilizar o H1 do jogo especificamente */
     color: var(--cor-secundaria); /* Usa a cor de destaque do seu tema principal */
     font-size: 1rem; /* Tamanho para o título do jogo */
-    margin-bottom: 0rem;
+    margin-bottom: 1rem;
 }
 
 
